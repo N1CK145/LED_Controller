@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <dropdown :options="objects" :selected="selected" @select="onSelect"></dropdown>
+    <div style="margin: 20px">
+        <dropdown :options="objects" :selected="selected" v-on:updateOption="onSelect"></dropdown>
     </div>
 </template>
 
@@ -12,10 +12,13 @@ export default {
 
     data() {
         return {
-            objects: [],
+            objects: [
+                { name: "TV", value: "E0:98:06:86:3A:47" },
+                { name: "Test", value: "Test" }
+            ],
             selected: {
-                name: "Hola",
-                value: "asdasd"
+                name: "TV",
+                value: "E0:98:06:86:3A:47"
             }
         }
     },
@@ -24,7 +27,11 @@ export default {
     },
     methods: {
         onSelect(payload){
-            this.selected = payload;
+            this.selected = payload
+            this.$emit(
+                "host-change",
+                this.selected.value
+            )
         }
     }
 }

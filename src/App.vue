@@ -1,8 +1,9 @@
 <template>
-  <div>
-    <Dropdown/>
-    <ColorPicker/>
-  </div>
+  <v-app>
+    <Dropdown @host-change="(mac) => onClientChange(mac)"/>
+    <p>Selected Macaddress: {{ selectedClient }}</p>
+    <ColorPicker @color-change="(hexa) => onHexaColorChange(hexa)"/>
+  </v-app>
 </template>
 
 <script>
@@ -16,21 +17,22 @@ export default {
   components: {
     ColorPicker,
     Dropdown,
+
   },
 
-  data: function() {
+  data: () => {
     return {
       host: "raspberrypi",
       port: 9001,
       clientID: "Website-9F888F",
       mqttClient: null,
-      pickerValue: ColorPicker.currHexaColor
+      selectedClient: "E0:98:06:86:3A:47"
     }
   },
 
   methods: {
     connectMQTT(){
-      const connectUrl = `ws://${this.host}:${this.port}`
+      const connectUrl = `mqtt://${this.host}:${this.port}`
       try{
         this.mqttClient = mqtt.connect(connectUrl)
       }catch(e){
@@ -47,13 +49,21 @@ export default {
         console.log(`Received message ${message} from topic ${topic}`)
       })
     },
-    pubColor(){
-      
+    onHexaColorChange(val){
+      this.pubColor(val)
+    },
+    onClientChange(val){
+      this.selectedClient = val
+    },
+    pubColor(color){
+      color = color.replace("#", "")
+
+      this.mqttClient.publish("led/client/" + this.selectedClient, "all;static;" + color.slice(0, 6))
     }
   },
+
   mounted: function(){
     this.connectMQTT()
-    console.log(this.pickerValue)
   },
 };
 </script>

@@ -5,7 +5,9 @@
             mode="hexa"
             show-swatches
             hide-mode-switch
-            v-model="currHexaColor">
+            v-model="currHexaColor"
+            @update:color="onColorChange()"
+            swatches-max-height="9000">
         </v-color-picker>
     </div>
 </template>
@@ -19,8 +21,17 @@ export default {
         currHexaColor: ''
     }),
 
+    methods: {
+        onColorChange(){
+            this.$emit(
+                'color-change',
+                this.currHexaColor
+            )
+        }   
+    },
+
     mounted: function() {
-        this.currHexaColor = "#FF0000FF"
+        this.currHexaColor = "#000000FF"
     }
 }
 </script>
